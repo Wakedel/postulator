@@ -73,10 +73,7 @@ Postulator is a powerful tool designed to help individuals, especially those fro
 
         ```json
         {
-          "job_posting": [
-            "[https://www.example-job-board.com/job/software-engineer](https://www.example-job-board.com/job/software-engineer)",
-            "[https://www.example-company.com/about-us](https://www.example-company.com/about-us)"
-          ],
+          "job_posting": "urls: https://www.example-job-board.com/job/software-engineer ; https://www.example-company.com/about-us",
           "language": "English",
           "personal_writeup": "I am a highly motivated software engineer with a passion for building scalable and efficient systems. I have experience in Python, Java, and cloud technologies. I am particularly interested in this role because it aligns with my career goals and allows me to contribute to innovative projects. I have overcome a difficult economic background through hard work, and I am highly motivated to succeed. I'm also very interested in the company's commitment to social responsibility."
         }
