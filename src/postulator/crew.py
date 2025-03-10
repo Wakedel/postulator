@@ -16,9 +16,10 @@ from crewai_tools import (
   ScrapeWebsiteTool,
   MDXSearchTool,
   TXTSearchTool,
-  SerperDevTool
+  SerperDevTool,
+  PDFSearchTool
 )
-from src.postulator.tools.custom_tool import human_feedback, ask_human, final_response_cleaner, letter_writer
+from src.postulator.tools.custom_tool import human_feedback, ask_human, final_response_cleaner, letter_writer, PdfReaderTool
 
 search_tool = SerperDevTool()
 scrape_tool = ScrapeWebsiteTool()
@@ -31,6 +32,31 @@ read_resume_template = FileReadTool(file_path='input/resume_template.tex')
 
 response_cleaner_md = final_response_cleaner(strings_to_remove=["```md", "```markdown", "```", "'''md", "'''markdown", "'''"], result_as_answer=True)
 response_cleaner_tex = final_response_cleaner(strings_to_remove=["```tex", "```", "'''tex", "'''"], result_as_answer=True)
+
+read_pdf = PdfReaderTool()
+
+semantic_search_pdf = PDFSearchTool(
+    config=dict(
+        llm=dict(
+            provider="google", # or google, openai, anthropic, llama2, ...
+            config=dict(
+                model="gemini/gemini-1.5-flash",
+				api_key=os.environ["GEMINI_API_KEY"],
+                # temperature=0.5,
+                # top_p=1,
+                # stream=true,
+            ),
+        ),
+        embedder=dict(
+            provider="google", # or openai, ollama, ...
+            config=dict(
+                model="models/embedding-001",
+                task_type="retrieval_document",
+                # title="Embeddings",
+            ),
+        ),
+    )
+)
 
 #"""
 semantic_search_resume = MDXSearchTool(
@@ -107,7 +133,7 @@ class Postulator():
 	def researcher(self) -> Agent:
 		return Agent(
 			config=self.agents_config['researcher'],
-			tools = [scrape_tool, search_tool, read_file],
+			tools = [scrape_tool, search_tool, read_file, read_pdf],#,semantic_search_pdf],
 			verbose=True,
 			llm = gemini_flash_llm,
 			max_retry_limit=10
