@@ -53,7 +53,7 @@ Postulator is a powerful tool designed to help individuals, especially those fro
 
 3.  **Configure API keys:**
 
-    -   Amend the `.env` file in the root directory to add your Google Gemini and Google Serper API keys:
+    Amend the `.env` file in the root directory to add your Google Gemini and Google Serper API keys:
         ```
         GOOGLE_API_KEY=your_gemini_api_key
         SERPER_API_KEY=your_serper_api_key
