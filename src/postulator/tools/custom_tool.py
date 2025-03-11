@@ -28,9 +28,10 @@ class human_feedback_input(BaseModel):
     argument: str = Field(..., description="The draft of the letter") #"What you need a feedback about and the draft")
 
 class human_feedback(BaseTool):
-    name: str = "Get human feedback"
+    name: str = "Get human feedback and save"
     description: str = (
         "Ask the human user to give a feedback and retrieve the provided response."
+        "If the human is satisfied, he can savec the letter."
     )
     args_schema: Type[BaseModel] = human_feedback_input
 
@@ -66,10 +67,11 @@ Details about what you need the user to give a feedback about.
 
         pydantic_letter = MotivationLetter.model_validate_json( json_str_propre )
 
+        letter_for_feedback = letter_writer._letter_for_feedback(pydantic_letter)
         latex_letter = letter_writer._letter_from_pydantic(pydantic_letter)
 
         print(80*"_")
-        print(latex_letter)
+        print(letter_for_feedback)
         print(80*"_")
         print("Are you satisfied with the provided content?\n Type 'save' to keep the current version")
         print(80*"_")
@@ -78,10 +80,12 @@ Details about what you need the user to give a feedback about.
 
         if response == "save":
             try:
-                with open("input/motivation_letter_from_tool.tex", 'w', encoding='utf-8') as file:
+                with open("output/motivation_letter_from_tool.tex", 'w', encoding='utf-8') as file:
                     file.write(latex_letter)
+                return("Your great letter was accepted by the human and successfully saved \n\n" + cleaned)
             except Exception as e:
                 return(f"Error writing to file: {str(e)}")
+            
 
         return response
 
@@ -166,6 +170,64 @@ class letter_writer(BaseTool):
         latex_letter = self._letter_from_pydantic(pydantic_letter)
 
         return latex_letter
+
+    @staticmethod
+    def _letter_for_feedback(pydantic_letter: MotivationLetter) -> str:
+        """Generates a motivation letter from a Pydantic model."""
+        sender = pydantic_letter.sender
+        recipient = pydantic_letter.recipient
+        content = pydantic_letter.content
+
+        letter = f"""
+    % ========== SENDER INFO ==========
+    % Strategic purpose: Professional presentation of contact details
+    {sender.name} 
+    {sender.address} 
+    {sender.email} 
+    {sender.phone} 
+
+    % ========== RECIPIENT INFO ==========
+    % Strategic purpose: Demonstrate targeted application
+    {recipient.name or ''} 
+    {recipient.institution}
+    {recipient.department or ''} 
+    {recipient.address or ''}
+
+    % ========== SUBJECT LINE ==========
+    % Strategic purpose: Immediate context setting
+    {pydantic_letter.subject}
+
+    ________________________________________________________________________
+
+    % ========== FORMAL OPENING ==========
+    {content.formal_opening}
+
+    % ========== OPENING PARAGRAPH ==========
+    % Strategic purpose: Establish relevance + value proposition
+    {content.opening_paragraph}
+
+    % ========== CORE PARAGRAPH 1 ==========
+    {content.core_paragraph_1}
+
+    % ========== CORE PARAGRAPH 2 ==========
+    {content.core_paragraph_2}
+
+    % ========== CORE PARAGRAPH 3 ==========
+    {content.career_decision_paragraph}
+
+    % ========== LAST PARAGRAPH ==========
+    % Strategic purpose: Reinforce enthusiasm + call to action
+    {content.closing_paragraph}
+
+    % ========== GRATITUDE AND AVAILABILITY ==========
+    {content.formal_closing}
+
+    % ========== FORMAL CLOSING ==========
+    {content.final_greeting}
+    
+    {sender.name}
+    """
+        return letter
 
     @staticmethod
     def _letter_from_pydantic(pydantic_letter: MotivationLetter) -> str:
