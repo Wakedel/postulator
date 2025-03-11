@@ -36,19 +36,18 @@ Postulator is a powerful tool designed to help individuals, especially those fro
     cd postulator
     ```
 
-2.  **Install dependencies:**
+2.  **Install:**
 
-    -   **Using pip:**
+    -   **Install crewai using pip:**
 
         ```bash
-        pip install -r requirements.txt
+        pip install crewai
         ```
 
-    -   **Using conda:**
-
+    -   **Build the environment the code will be run in:**
+        Go to the root directory of the project and run the following command.
         ```bash
-        conda create --name postulator_env --file requirements_conda.txt
-        conda activate postulator_env
+        crewai install
         ```
 
 3.  **Configure API keys:**

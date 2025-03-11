@@ -73,6 +73,8 @@ Details about what you need the user to give a feedback about.
         print(80*"_")
         print(letter_for_feedback)
         print(80*"_")
+        print(splited[-1])
+        print(80*"_")
         print("Are you satisfied with the provided content?\n Type 'save' to keep the current version")
         print(80*"_")
         response = input()
