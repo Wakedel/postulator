@@ -267,7 +267,7 @@ class Postulator():
 	def motivation_letter_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['motivation_letter_task'],
-			output_file="output/motivation_letter.tex",
+			output_file="output/motivation_letter.json",
 			#removed self.resume_strategy_task(),
     		context=[self.research_task(), self.resume_strategy_task(), self.strength_weakness_analysis_task()],
 			max_retries=10,

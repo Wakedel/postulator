@@ -25,7 +25,16 @@ class ask_human(BaseTool):
     
 class human_feedback_input(BaseModel):
     """Input schema for MyCustomTool."""
-    argument: str = Field(..., description="The draft of the letter") #"What you need a feedback about and the draft")
+    argument: str = Field(..., description=""" Should look like:
+                   
+Here is the draft of the motivation letter in JSON format:
+
+```json
+(put the json structure here)
+```
+
+Details about what you need the user to give a feedback about.
+                   """) # "The draft of the letter ") #"What you need a feedback about and the draft")
 
 class human_feedback(BaseTool):
     name: str = "Get human feedback and save"
@@ -37,9 +46,14 @@ class human_feedback(BaseTool):
 
     def _run(self,argument:str) -> str:
         try:
+            #print(argument)
             splited = argument.split("```")
+            #print( f"Len splited: {len(splited)}")
             if len(splited)>3: raise
-            filtered = [ string for string in splited if "json" in string]
+            elif len(splited)==1:
+                filtered = argument
+            else:
+                filtered = [ string for string in splited if "json" in string]
             if len(filtered) != 1: raise
             cleaned = (filtered[0]).replace("json\n","").replace("json","")
         except:
@@ -82,7 +96,7 @@ Details about what you need the user to give a feedback about.
 
         if response == "save":
             try:
-                with open("output/motivation_letter_from_tool.tex", 'w', encoding='utf-8') as file:
+                with open("output/motivation_letter.tex", 'w', encoding='utf-8') as file:
                     file.write(latex_letter)
                 return("Your great letter was accepted by the human and successfully saved \n\n" + cleaned)
             except Exception as e:
@@ -205,21 +219,24 @@ class letter_writer(BaseTool):
     {content.formal_opening}
 
     % ========== OPENING PARAGRAPH ==========
-    % Strategic purpose: Establish relevance + value proposition
-    {content.opening_paragraph}
+    % Strategic purpose: {content.opening_paragraph.strategic_purpose}
+    {content.opening_paragraph.content}
 
     % ========== CORE PARAGRAPH 1 ==========
-    {content.core_paragraph_1}
+    % Strategic purpose: {content.core_paragraph_1.strategic_purpose}
+    {content.core_paragraph_1.content}
 
     % ========== CORE PARAGRAPH 2 ==========
-    {content.core_paragraph_2}
+    % Strategic purpose: {content.core_paragraph_2.strategic_purpose}
+    {content.core_paragraph_2.content}
 
     % ========== CORE PARAGRAPH 3 ==========
-    {content.career_decision_paragraph}
+    % Strategic purpose: {content.career_decision_paragraph.strategic_purpose}
+    {content.career_decision_paragraph.content}
 
     % ========== LAST PARAGRAPH ==========
-    % Strategic purpose: Reinforce enthusiasm + call to action
-    {content.closing_paragraph}
+    % Strategic purpose: {content.closing_paragraph.strategic_purpose}
+    {content.closing_paragraph.content}
 
     % ========== GRATITUDE AND AVAILABILITY ==========
     {content.formal_closing}
@@ -280,24 +297,27 @@ class letter_writer(BaseTool):
     {content.formal_opening}\\vspace{{0.15cm}}
 
     % ========== OPENING PARAGRAPH ==========
-    % Strategic purpose: Establish relevance + value proposition
-    {content.opening_paragraph}
+    % Strategic purpose: {content.opening_paragraph.strategic_purpose}
+    {content.opening_paragraph.content}
 
     % ========== CORE PARAGRAPH 1 ==========
-    % Strategic purpose: Demonstrate expertise through academic progression
-    {content.core_paragraph_1}
+    % Strategic purpose: {content.core_paragraph_1.strategic_purpose}
+    {content.core_paragraph_1.content}
 
     % ========== CORE PARAGRAPH 2 ==========
-    % Strategic purpose: Show focused specialization + technical capabilities
-    {content.core_paragraph_2}
+    % Strategic purpose: {content.core_paragraph_2.strategic_purpose}
+    {content.core_paragraph_2.content}
 
-    % ========== CAREER DECISION PARAGRAPH ==========
-    % Strategic purpose: Address potential concerns + show commitment
-    {content.career_decision_paragraph}
+    % ========== CORE PARAGRAPH 3 ==========
+    % Strategic purpose: {content.career_decision_paragraph.strategic_purpose}
+    {content.career_decision_paragraph.content}
 
-    % ========== CLOSING PARAGRAPH ==========
-    % Strategic purpose: Reinforce enthusiasm + call to action
-    {content.closing_paragraph}
+    % ========== LAST PARAGRAPH ==========
+    % Strategic purpose: {content.closing_paragraph.strategic_purpose}
+    {content.closing_paragraph.content}
+
+    % ========== GRATITUDE AND AVAILABILITY ==========
+    {content.formal_closing}
 
     % ========== FORMAL CLOSING ==========
     {content.formal_closing}
