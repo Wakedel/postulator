@@ -35,12 +35,54 @@ class human_feedback(BaseTool):
     args_schema: Type[BaseModel] = human_feedback_input
 
     def _run(self,argument:str) -> str:
-        # Implementation goes here
+        try:
+            splited = argument.split("```")
+            if len(splited)>3: raise
+            filtered = [ string for string in splited if "json" in string]
+            if len(filtered) != 1: raise
+            cleaned = (filtered[0]).replace("json\n","").replace("json","")
+        except:
+            return(""" Remember that the tool argument should look like:
+                   
+Here is the draft of the motivation letter in JSON format:
+
+```json
+(put the json structure here)
+```
+
+Details about what you need the user to give a feedback about.
+                   """)
+        
+        try:
+            data = json.loads(cleaned)
+        except json.JSONDecodeError as e:
+            #print(f"JSON parsing failed: {e}")
+            #print(f"The str we tried to parse was \n {cleaned}")
+            return(f"JSON parsing failed: {e}")
+            # Handle error here
+
+         # Full structure available
+        json_str_propre = json.dumps(data, indent=2)
+
+        pydantic_letter = MotivationLetter.model_validate_json( json_str_propre )
+
+        latex_letter = letter_writer._letter_from_pydantic(pydantic_letter)
+
         print(80*"_")
-        print(argument)
+        print(latex_letter)
         print(80*"_")
-        response = input("Are you satisfied with the provided content?\n")
+        print("Are you satisfied with the provided content?\n Type 'save' to keep the current version")
         print(80*"_")
+        response = input()
+        print(80*"_")
+
+        if response == "save":
+            try:
+                with open("input/motivation_letter_from_tool.tex", 'w', encoding='utf-8') as file:
+                    file.write(latex_letter)
+            except Exception as e:
+                return(f"Error writing to file: {str(e)}")
+
         return response
 
 class cleaner_input(BaseModel):
@@ -249,4 +291,5 @@ class PdfReaderTool(BaseTool):
 
 if __name__ == "__main__": 
     PdfReader = PdfReaderTool()
-    print( PdfReader._run( pdf_path="input/job_posting.pdf" ) )
+    #print( PdfReader._run( pdf_path="input/job_posting.pdf" ) )
+    print( PdfReader._run( pdf_path="input/m2_cnn_v6_anglais.pdf" ) )
