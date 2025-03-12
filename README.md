@@ -32,7 +32,7 @@ Postulator is a powerful tool designed to help individuals, especially those fro
 1.  **Clone the repository:**
 
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/Wakedel/postulator
     cd postulator
     ```
 

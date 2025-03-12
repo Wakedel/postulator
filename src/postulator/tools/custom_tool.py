@@ -273,10 +273,7 @@ class letter_writer(BaseTool):
     % ========== RECIPIENT INFO ==========
     % Strategic purpose: Demonstrate targeted application
     \\vspace{{0.15cm}}
-    {recipient.name or ''} \\\\
-    {recipient.institution} \\\\
-    {recipient.department or ''} \\\\
-    {recipient.address or ''}
+    {recipient.name or ''} { "\\\\" if recipient.name else ''} {recipient.institution} \\\\ {recipient.department or ''} { "\\\\" if recipient.name else '' }{recipient.address or ''} { "\\\\" if recipient.name else '' }
 
     % ========== DATE ==========
     \\vspace{{0.15cm}}
@@ -320,9 +317,7 @@ class letter_writer(BaseTool):
     {content.formal_closing}
 
     % ========== FORMAL CLOSING ==========
-    {content.formal_closing}
     \\vspace{{0.15cm}}
-
     {content.final_greeting}
     \\vspace{{1cm}}\\\\
     {sender.name}

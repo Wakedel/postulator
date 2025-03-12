@@ -117,6 +117,12 @@ gemini_flash_llm = LLM(
 					temperature=0.0,
 					)
 
+gemini_flash_llm_creative = LLM(
+					model=os.environ["MODEL"], 
+					api_key=os.environ["GEMINI_API_KEY"],
+					temperature=0.2,
+					)
+
 @CrewBase
 class Postulator():
 	"""Postulator crew"""
@@ -195,7 +201,7 @@ class Postulator():
 					],
 					 #letter_writer(result_as_answer=True)],#,response_cleaner_tex],#,ask_human()],
 			verbose=True,
-			llm = gemini_flash_llm,
+			llm = gemini_flash_llm_creative,
 			max_retry_limit=10,
 		)
 	
